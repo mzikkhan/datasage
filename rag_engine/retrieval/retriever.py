@@ -1,7 +1,7 @@
 from typing import List
 from langchain_core.documents import Document
-from datasage.indexing.vector_store import VectorStore
-from datasage.indexing.embedder import Embedder
+from indexing.vector_store import VectorStore
+from indexing.embedder import Embedder
 
 class Retriever:
     def __init__(self, vector_store: VectorStore, embedder: Embedder):
