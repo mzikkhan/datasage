@@ -55,7 +55,9 @@ pypdf
 
 ### 3. Install Ollama
 
-Download and install Ollama from [ollama.com](https://ollama.com/download)
+Download and install Ollama from [ollama.com](https://ollama.com/download). 
+
+Once installed, in a separate terminal do the following:
 
 Pull a model:
 ```bash
