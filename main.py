@@ -14,7 +14,7 @@ def main():
 
     # Initialize the RAG Engine
     print("\n🔧 Initializing RAG Engine...")
-    engine = RagEngine(csv_path, metadata=metadata)
+    engine = RagEngine(csv_path, metadata=metadata, model_name="tinyllama:1.1b")
 
     # Define your analysis question
     query = "Provide a detailed summary of the key insights from this dataset."

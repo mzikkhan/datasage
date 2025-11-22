@@ -7,7 +7,7 @@ class LLMGenerator:
         from llama_index.llms.ollama import Ollama
         
         self.llm = Ollama(model=model)
-        Settings.llm = self.llm
+        # Settings.llm = self.llm
 
     def generate_answer(self, question: str, context_docs: List[Document]) -> str:
         context_str = "\n\n".join(

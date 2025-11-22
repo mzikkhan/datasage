@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 class RagEngine:
-    def __init__(self, data_files: List[str], metadata: dict = None):
+    def __init__(self, data_files: List[str], model_name: str = "llama3.1", metadata: dict = None):
 
         # 1) Load documents
         loader = self._choose_loader(data_files)
@@ -44,7 +44,7 @@ class RagEngine:
 
         # 4) Prepare retriever and generator
         self.retriever = Retriever(vector_store=vs, embedder=embedder)
-        self.generator = LLMGenerator(model="llama3.1")
+        self.generator = LLMGenerator(model=model_name)
 
     def _choose_loader(self, data_files):
         # Ensure list
