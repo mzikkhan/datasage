@@ -3,8 +3,8 @@ from rag_engine import RagEngine
 
 def main():
 
-    # Path to your CSV file
-    csv_path = "fruits_processed.csv"
+    # Global Path to your CSV file
+    csv_path = "/Users/zaedkhan/Desktop/data533_project_experiments/datasage/fruits_processed.csv"
     
     # Optional metadata for the document
     metadata = {

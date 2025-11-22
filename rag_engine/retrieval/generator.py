@@ -2,7 +2,7 @@ from typing import List
 from langchain_core.documents import Document
 
 class LLMGenerator:
-    def __init__(self, model: str = "llama3.1:latest"):
+    def __init__(self, model: str = "llama3.1"):
         from llama_index.core import Settings
         from llama_index.llms.ollama import Ollama
         
