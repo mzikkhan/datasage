@@ -3,22 +3,22 @@ from pathlib import Path
 from langchain_core.documents import Document
 import csv
 
-
 class DocumentLoader:
-    # Base class for all loaders
+    #parent class that all the specific loaders inherit from
+    
     def load(self, file_paths: List[str]) -> List[Document]:
-        raise NotImplementedError("Subclasses must override this method.")
-
+        raise NotImplementedError("Each loader needs its own load method")
 
 class PDFLoader(DocumentLoader):
-    # Loads pdf files
+    #handles PDF files, extracts all pages into one document
+    
     def load(self, file_paths: List[str]) -> List[Document]:
         docs = []
 
         try:
             from pypdf import PdfReader
         except ImportError:
-            raise ImportError("Install pypdf to load PDF files.")
+            raise ImportError("You need pypdf installed: pip install pypdf")
 
         for p in file_paths:
             if not p.lower().endswith(".pdf"):
@@ -27,6 +27,7 @@ class PDFLoader(DocumentLoader):
             reader = PdfReader(p)
             pages = []
 
+            #pull text from each page
             for page in reader.pages:
                 text = page.extract_text() or ""
                 if text:
@@ -46,12 +47,11 @@ class PDFLoader(DocumentLoader):
                     }
                 )
             )
-
         return docs
 
-
 class CSVLoader(DocumentLoader):
-    # Loads csv files
+    #reads CSV files row by row, each row becomes a separate document
+    
     def load(self, file_paths: List[str]) -> List[Document]:
         docs = []
 
@@ -62,6 +62,7 @@ class CSVLoader(DocumentLoader):
             with open(p, encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
 
+                #turn each row into key=value pairs
                 for i, row in enumerate(reader):
                     text = ", ".join(f"{k}={v}" for k, v in row.items())
                     docs.append(
@@ -75,12 +76,11 @@ class CSVLoader(DocumentLoader):
                             }
                         )
                     )
-
         return docs
 
-
 class TXTLoader(DocumentLoader):
-    # Loads text files
+    #simple text file loader, reads the whole file as one document
+    
     def load(self, file_paths: List[str]) -> List[Document]:
         docs = []
 
@@ -101,19 +101,18 @@ class TXTLoader(DocumentLoader):
                     }
                 )
             )
-
         return docs
 
-
 class XLSMLoader(DocumentLoader):
-    # Loads data from .xlsm or .xlsx files
+    #handles Excel files (.xlsm and .xlsx) - works similar to CSV loader
+    
     def load(self, file_paths: List[str]) -> List[Document]:
         docs = []
 
         try:
             import openpyxl
         except ImportError:
-            raise ImportError("Install openpyxl to load Excel files.")
+            raise ImportError("You need openpyxl installed: pip install openpyxl")
 
         for p in file_paths:
             if not (p.lower().endswith(".xlsm") or p.lower().endswith(".xlsx")):
@@ -122,10 +121,12 @@ class XLSMLoader(DocumentLoader):
             wb = openpyxl.load_workbook(p, data_only=True)
             sheet = wb.active
 
+            #grab headers from first row
             headers = []
             for cell in sheet[1]:
                 headers.append(cell.value if cell.value is not None else "")
 
+            #process each data row
             for i, row in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
                 values = []
                 for h, v in zip(headers, row):
@@ -142,5 +143,4 @@ class XLSMLoader(DocumentLoader):
                         }
                     )
                 )
-
         return docs
