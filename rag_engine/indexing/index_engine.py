@@ -95,3 +95,4 @@ class IndexingEngine:
         Convenience method: search the index directly.
         """
         return self.vector_store.search(query, k=k, filter=filter)
+s
