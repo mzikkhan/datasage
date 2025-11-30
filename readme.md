@@ -5,7 +5,7 @@ A lightweight, modular Python package for building Retrieval-Augmented Generatio
 ## 🌟 Features
 
 - **Document Ingestion**: Support for multiple file formats (CSV, XSLX, PDF, TXT).
-- **Intelligent Chunking**: Configurable text splitting with overlap for context preservation.
+- **Efficient Chunking**: Configurable text splitting with overlap for context preservation.
 - **Vector Storage**: ChromaDB-backed vector database for efficient similarity search.
 - **Semantic Search**: HuggingFace embeddings for accurate document retrieval.
 - **LLM Integration**: Local LLM support via Ollama for answer generation.
