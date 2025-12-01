@@ -78,9 +78,6 @@ class LLMGenerator:
     def __init__(self, model: str = "llama3.1"):
         self.llm = OllamaLLM(model=model)
 
-Context:
-{context_str}
-
 Question: {question}
 
 Answer:"""
