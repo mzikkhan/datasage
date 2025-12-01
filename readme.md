@@ -89,11 +89,7 @@ datasage/
 ## 🧪 Running Tests
 
 ```bash
-# Test basic indexing
-python test.py
 
-# Test full RAG pipeline
-python test_full_rag.py
 ```
 
 ## 🔧 Configuration
