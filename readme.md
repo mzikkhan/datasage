@@ -88,10 +88,6 @@ datasage/
 
 ## 🧪 Running Tests
 
-```bash
-
-```
-
 ## 🔧 Configuration
 
 ### Indexing Engine Parameters
