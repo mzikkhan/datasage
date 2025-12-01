@@ -71,8 +71,6 @@ ollama run llama3.1
 
 ## 📖 Usage
 
-### Basic Indexing
-
 ```python
 from datasage.indexing.index_engine import IndexingEngine
 
