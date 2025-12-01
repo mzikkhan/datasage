@@ -69,26 +69,6 @@ Verify installation:
 ollama run llama3.1
 ```
 
-## 📖 Usage
-
-```python
-
-# Initialize components
-indexer = IndexingEngine(persist_dir="./my_index")
-embedder = Embedder()
-retriever = Retriever(
-    vector_store=indexer.vector_store,
-    embedder=embedder
-)
-generator = LLMGenerator()
-
-# Ask questions
-question = "What is in the dataset?"
-docs = retriever.retrieve(question, k=3)
-answer = generator.generate_answer(question, docs)
-print(answer)
-```
-
 ## 📁 Project Structure
 
 ```
