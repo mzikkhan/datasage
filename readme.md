@@ -73,13 +73,13 @@ ollama run llama3.1
 
 ```
 datasage/
+├── ingestion/
+│   ├── loaders.py           # Document loaders (PDF, CSV, TXT)
+│   └── chunker.py           # Text chunking utilities
 ├── indexing/
 │   ├── embedder.py          # Text embedding using HuggingFace
 │   ├── vector_store.py      # ChromaDB vector storage
 │   └── index_engine.py      # High-level indexing pipeline
-├── ingestion/
-│   ├── loaders.py           # Document loaders (PDF, CSV, TXT)
-│   └── chunker.py           # Text chunking utilities
 ├── query/
 │   ├── retriever.py         # Semantic search retriever
 │   └── generator.py         # LLM answer generation
