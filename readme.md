@@ -73,11 +73,6 @@ ollama run llama3.1
 
 ```python
 
-Question: {question}
-
-Answer:"""
-        return self.llm.invoke(prompt)
-
 # Initialize components
 indexer = IndexingEngine(persist_dir="./my_index")
 embedder = Embedder()
