@@ -74,7 +74,6 @@ ollama run llama3.1
 ```python
 
 # Search the index
-results = indexer.search("Your query here", k=5)
 print(results)
 ```
 
