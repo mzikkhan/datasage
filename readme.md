@@ -86,8 +86,6 @@ datasage/
 └── __init__.py
 ```
 
-## 🧪 Running Tests
-
 ## 🔧 Configuration
 
 ### Indexing Engine Parameters
