@@ -73,11 +73,6 @@ ollama run llama3.1
 
 ```python
 
-# Simple LLM Generator
-class LLMGenerator:
-    def __init__(self, model: str = "llama3.1"):
-        self.llm = OllamaLLM(model=model)
-
 Question: {question}
 
 Answer:"""
