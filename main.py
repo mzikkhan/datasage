@@ -20,7 +20,8 @@ def main():
     query = "Provide a detailed summary of the key insights from this dataset."
 
     print("\n🤖 Asking the model for insights...")
-    response = engine.query(query)
+    # response = engine.query(query)
+    response = engine.summary()
 
     print("\n📊 Summary Insights:\n")
     print(response)

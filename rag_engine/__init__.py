@@ -60,7 +60,28 @@ class RagEngine:
         else:
             raise ValueError(f"Unsupported file type: {filename}")
 
+    # Function 1
     def query(self, question: str, top_k: int = 5) -> str:
         docs = self.retriever.retrieve(question, k=top_k)
         answer = self.generator.generate_answer(question, docs)
         return answer
+
+    # Function 2
+    def summary(self, topic: str = "", top_k: int = 5) -> str:
+        """Generate a summary of the data.
+        
+        Args:
+            topic: Optional topic/query to retrieve relevant documents. If empty, retrieves documents broadly.
+            top_k: Number of documents to retrieve for summarization.
+            
+        Returns:
+            A bulleted summary of key ideas from the retrieved documents.
+        """
+        # Use topic to retrieve relevant documents, or a generic query if no topic
+        query_text = topic if topic else "main topics and key information"
+        docs = self.retriever.retrieve(query_text, k=top_k)
+        
+        # Fixed prompt for summarization
+        summary_prompt = "Summarize in concise bullet points the key ideas in the data"
+        summary = self.generator.generate_answer(summary_prompt, docs)
+        return summary
