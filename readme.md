@@ -77,11 +77,6 @@ ollama run llama3.1
 class LLMGenerator:
     def __init__(self, model: str = "llama3.1"):
         self.llm = OllamaLLM(model=model)
-    
-    def generate_answer(self, question: str, context_docs: List[Document]) -> str:
-        context_str = "\n\n".join(
-            f"Content: {doc.page_content}" for doc in context_docs
-        )
 
 Context:
 {context_str}
