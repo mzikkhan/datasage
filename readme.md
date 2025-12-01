@@ -111,6 +111,22 @@ datasage/
 - **Research Assistant**: Extract information from academic papers
 - **Code Documentation**: Query codebases and technical docs
 
+
+## Contributors
+
+### Yihang Wang
+- Sub-package: ingestion
+- Modules: loaders.py, chunker.py
+
+### Aaron Sukare
+- Sub-package: indexing
+- Modules: embedder.py, vector_store.py, index_engine.py
+
+### Zaed Khan
+- Sub-package: retrieval
+- Modules: generator.py, retriever.py, data_models.py
+
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
