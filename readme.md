@@ -73,14 +73,6 @@ ollama run llama3.1
 
 ```python
 
-# Initialize the indexing engine
-indexer = IndexingEngine(
-    persist_dir="./my_index",
-    embedding_model="all-MiniLM-L6-v2",
-    chunk_size=1000,
-    overlap=200
-)
-
 # Index a document
 indexer.index("path/to/your/document.csv")
 
