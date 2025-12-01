@@ -73,10 +73,6 @@ ollama run llama3.1
 
 ```python
 
-# Search the index
-print(results)
-```
-
 ### Full RAG Pipeline
 
 ```python
