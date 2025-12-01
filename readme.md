@@ -72,12 +72,6 @@ ollama run llama3.1
 ## 📖 Usage
 
 ```python
-from datasage.indexing.index_engine import IndexingEngine
-from datasage.query.retriever import Retriever
-from datasage.indexing.embedder import Embedder
-from langchain_ollama import OllamaLLM
-from langchain_core.documents import Document
-from typing import List
 
 # Simple LLM Generator
 class LLMGenerator:
