@@ -4,8 +4,7 @@ __pycache__/
 *$py.class
 
 # Aaron and Yihang code
-rag_engine/indexing/
-rag_engine/ingestion/
+
 
 # C extensions
 *.so
