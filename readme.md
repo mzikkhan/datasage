@@ -82,7 +82,6 @@ class LLMGenerator:
         context_str = "\n\n".join(
             f"Content: {doc.page_content}" for doc in context_docs
         )
-        prompt = f"""Use the following context to answer the question.
 
 Context:
 {context_str}
