@@ -73,9 +73,6 @@ ollama run llama3.1
 
 ```python
 
-# Index a document
-indexer.index("path/to/your/document.csv")
-
 # Search the index
 results = indexer.search("Your query here", k=5)
 print(results)
