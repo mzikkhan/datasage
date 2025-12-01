@@ -72,10 +72,6 @@ ollama run llama3.1
 ## 📖 Usage
 
 ```python
-
-### Full RAG Pipeline
-
-```python
 from datasage.indexing.index_engine import IndexingEngine
 from datasage.query.retriever import Retriever
 from datasage.indexing.embedder import Embedder
