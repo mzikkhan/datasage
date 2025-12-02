@@ -5,7 +5,7 @@ from .ingestion.chunker import TextChunker
 from .ingestion.loaders import DocumentLoader
 from .ingestion.loaders import PDFLoader
 from .ingestion.loaders import CSVLoader
-from .ingestion.loaders import TextLoader
+from .ingestion.loaders import TXTLoader
 from .retrieval.retriever import Retriever
 from .retrieval.generator import LLMGenerator 
 from typing import List, Dict
@@ -26,12 +26,16 @@ class RagEngine:
     def __init__(self, data_files: List[str], model_name: str = "llama3.1", metadata: dict = None):
 
         # 1) Load documents
+        # Ensure data_files is a list
+        if isinstance(data_files, str):
+            data_files = [data_files]
+        
         loader = self._choose_loader(data_files)
         docs = loader.load(data_files)
 
         # 2) Split into chunks
         chunker = TextChunker()
-        chunks = chunker.chunk_documents(docs)
+        chunks = chunker.chunk_docs(docs)
 
         # 3) Initialize embedding and vector store
         embedder = Embedder(model_name="BAAI/bge-small-en-v1.5")
@@ -40,7 +44,10 @@ class RagEngine:
             persist_dir="./vector_db"
         )
 
-        # stores chunks
+        # stores chunks (filter out empty ones)
+        chunks = [c for c in chunks if c.page_content.strip()]
+        if not chunks:
+            raise ValueError("No valid content found in the documents after chunking")
         vs.add_documents(chunks)  
 
         # 4) Prepare retriever and generator
@@ -59,7 +66,7 @@ class RagEngine:
         elif filename.endswith(".csv"):
             return CSVLoader()
         elif filename.endswith(".txt"):
-            return TextLoader()
+            return TXTLoader()
         else:
             raise ValueError(f"Unsupported file type: {filename}")
 
@@ -115,7 +122,12 @@ class RagEngine:
         docs = loader.load(file_paths)
         
         chunker = TextChunker()
-        chunks = chunker.chunk_documents(docs)
+        chunks = chunker.chunk_docs(docs)
+        
+        # Filter out empty chunks
+        chunks = [c for c in chunks if c.page_content.strip()]
+        if not chunks:
+            return "No valid content found in the provided files"
         
         self.retriever.vs.add_documents(chunks)
         return f"Successfully added {len(chunks)} new chunks to the knowledge base."

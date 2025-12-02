@@ -13,7 +13,7 @@ from ..ingestion.loaders import (
     DocumentLoader,
     PDFLoader,
     CSVLoader,
-    TextLoader
+    TXTLoader
 )
 from .embedder import Embedder
 from .vector_store import VectorStore
@@ -126,7 +126,7 @@ class IndexingEngine:
         loader_map = {
             '.pdf': PDFLoader,
             '.csv': CSVLoader,
-            '.txt': TextLoader
+            '.txt': TXTLoader
         }
         
         loader_class = loader_map.get(ext)
