@@ -5,6 +5,7 @@ from .ingestion.chunker import TextChunker
 from .ingestion.loaders import DocumentLoader
 from .ingestion.loaders import PDFLoader
 from .ingestion.loaders import CSVLoader
+from .ingestion.loaders import TextLoader
 from .retrieval.retriever import Retriever
 from .retrieval.generator import LLMGenerator 
 from typing import List, Dict
@@ -57,6 +58,8 @@ class RagEngine:
             return PDFLoader()
         elif filename.endswith(".csv"):
             return CSVLoader()
+        elif filename.endswith(".txt"):
+            return TextLoader()
         else:
             raise ValueError(f"Unsupported file type: {filename}")
 

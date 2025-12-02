@@ -49,3 +49,23 @@ class LLMGenerator:
         
         response = self.llm.complete(prompt)
         return str(response)
+
+    def summarize_docs(self, docs: List[Document]) -> str:
+        """
+        Generate a bullet-point summary from a list of documents.
+        """
+        context_str = "\n\n".join(doc.page_content for doc in docs)
+        prompt = f"Summarize the following text in concise bullet points:\n\n{context_str}\n\nSummary:"
+        return self.llm.complete(prompt)
+
+    def evaluate_relevance(self, question: str, answer: str) -> str:
+        """
+        Ask the LLM to rate the relevance of the answer to the question.
+        """
+        prompt = (
+            f"Question: {question}\n"
+            f"Answer: {answer}\n\n"
+            "Rate the relevance of the answer to the question on a scale of 1 to 10. "
+            "Provide a brief explanation for your rating."
+        )
+        return self.llm.complete(prompt)
