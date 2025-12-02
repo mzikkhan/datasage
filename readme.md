@@ -31,7 +31,7 @@ DataSage
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/datasage.git
+git clone https://github.com/mzikkhan/datasage.git
 cd datasage
 ```
 
