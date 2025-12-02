@@ -89,6 +89,7 @@ class RagEngine:
         summary = self.generator.generate_answer(summary_prompt, docs)
         return summary
 
+    # Function 3
     def search_documents(self, query: str, top_k: int = 5) -> List[Dict]:
         """
         Retrieve relevant documents without generating an answer.
@@ -97,6 +98,7 @@ class RagEngine:
         docs = self.retriever.retrieve(query, k=top_k)
         return [{"content": d.page_content, "source": d.metadata} for d in docs]
 
+    # Function 4
     def get_knowledge_stats(self) -> Dict:
         """
         Return statistics about the underlying vector database,
@@ -104,6 +106,7 @@ class RagEngine:
         """
         return self.retriever.vs.get_statistics()
 
+    # Function 5
     def add_knowledge(self, file_paths: List[str]) -> str:
         """
         Ingest additional documents into the existing knowledge base.
@@ -116,10 +119,3 @@ class RagEngine:
         
         self.retriever.vs.add_documents(chunks)
         return f"Successfully added {len(chunks)} new chunks to the knowledge base."
-
-    def set_model(self, model_name: str) -> str:
-        """
-        Update the LLM model used for generation.
-        """
-        self.generator.llm.model = model_name
-        return f"Model switched to {model_name}"
