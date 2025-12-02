@@ -13,6 +13,9 @@ class Ollama:
         self.base_url = base_url
 
     def complete(self, prompt: str) -> str:
+        """
+        Structure an instruction prompt for the LLM.
+        """
         url = f"{self.base_url}/api/generate"
         payload = {
             "model": self.model,
@@ -41,6 +44,9 @@ class LLMGenerator:
         self.llm = Ollama(model=model)
 
     def generate_answer(self, question: str, context_docs: List[Document]) -> str:
+        """
+        Generate an answer to a question using the LLM.
+        """
         context_str = "\n\n".join(
             f"Source: {doc.metadata}\nContent: {doc.page_content}" 
             for doc in context_docs

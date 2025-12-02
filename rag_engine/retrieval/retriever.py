@@ -7,7 +7,7 @@ from ..indexing.vector_store import VectorStore
 
 class OllamaEmbedder:
     """
-    A simple Ollama embedder to embed documents and queriesß.
+    A simple Ollama embedder to embed documents and queries.
     """
     def __init__(self, model: str = "nomic-embed-text", base_url: str = "http://localhost:11434"):
         self.model = model
@@ -43,11 +43,17 @@ class OllamaEmbedder:
         return [self._get_embedding(text) for text in texts]
 
 class Retriever:
+    """
+    A simple retriever to retrieve documents from a vector store.
+    """
     def __init__(self, vector_store: VectorStore, embedder: OllamaEmbedder):
         self.vs = vector_store
         self.embedder = embedder
 
     def retrieve(self, query: str, k: int = 5, filter: dict = None) -> List[Document]:
+        """
+        Retrieve documents based on a query.
+        """
         embedding = self.embedder.embed_query(query)
         results = self.vs.store.similarity_search_by_vector(embedding, k=k, filter=filter)
         return [Document(page_content=d.page_content, metadata=d.metadata) for d in results]
