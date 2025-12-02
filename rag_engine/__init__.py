@@ -7,7 +7,7 @@ from .ingestion.loaders import PDFLoader
 from .ingestion.loaders import CSVLoader
 from .retrieval.retriever import Retriever
 from .retrieval.generator import LLMGenerator 
-from typing import List
+from typing import List, Dict
 
 __all__ = [
     "IndexingEngine",
@@ -85,3 +85,38 @@ class RagEngine:
         summary_prompt = "Summarize in concise bullet points the key ideas in the data"
         summary = self.generator.generate_answer(summary_prompt, docs)
         return summary
+
+    def search_documents(self, query: str, top_k: int = 5) -> List[Dict]:
+        """
+        Retrieve relevant documents without generating an answer.
+        Useful for inspecting what the RAG engine is finding.
+        """
+        docs = self.retriever.retrieve(query, k=top_k)
+        return [{"content": d.page_content, "source": d.metadata} for d in docs]
+
+    def get_knowledge_stats(self) -> Dict:
+        """
+        Return statistics about the underlying vector database,
+        including total documents, sources, and search metrics.
+        """
+        return self.retriever.vs.get_statistics()
+
+    def add_knowledge(self, file_paths: List[str]) -> str:
+        """
+        Ingest additional documents into the existing knowledge base.
+        """
+        loader = self._choose_loader(file_paths)
+        docs = loader.load(file_paths)
+        
+        chunker = TextChunker()
+        chunks = chunker.chunk_documents(docs)
+        
+        self.retriever.vs.add_documents(chunks)
+        return f"Successfully added {len(chunks)} new chunks to the knowledge base."
+
+    def set_model(self, model_name: str) -> str:
+        """
+        Update the LLM model used for generation.
+        """
+        self.generator.llm.model = model_name
+        return f"Model switched to {model_name}"
