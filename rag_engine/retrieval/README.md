@@ -178,6 +178,76 @@ answer = generator.generate_answer("When was Python created?", docs)
 # Returns: "Python was created in 1991."
 ```
 
+#### `summarize_docs(docs: List[Document]) -> str`
+
+**Purpose:** Generates a bullet-point summary from a list of documents.
+
+**Parameters:**
+- `docs` (List[Document]): List of documents to summarize
+
+**Returns:** Generated summary as a string
+
+**How it works:**
+1. **Context Extraction:**
+   - Iterates through each document in `docs`
+   - Extracts only the `page_content` from each document
+   - Joins all content with double newlines
+2. **Prompt Construction:**
+   - Creates a summarization prompt:
+     ```
+     Summarize the following text in concise bullet points:
+     
+     {context_str}
+     
+     Summary:
+     ```
+3. **Generation:**
+   - Sends the prompt to `self.llm.complete()`
+   - Returns the generated summary
+
+**Example:**
+```python
+docs = [
+    Document(page_content="Python is versatile.", metadata={}),
+    Document(page_content="Python has extensive libraries.", metadata={})
+]
+summary = generator.summarize_docs(docs)
+# Returns: "- Python is a versatile language\n- It has extensive libraries"
+```
+
+#### `evaluate_relevance(question: str, answer: str) -> str`
+
+**Purpose:** Asks the LLM to rate the relevance of an answer to a question.
+
+**Parameters:**
+- `question` (str): The original question
+- `answer` (str): The answer to evaluate
+
+**Returns:** Evaluation and rating as a string
+
+**How it works:**
+1. **Prompt Construction:**
+   - Creates an evaluation prompt:
+     ```
+     Question: {question}
+     Answer: {answer}
+     
+     Rate the relevance of the answer to the question on a scale of 1 to 10.
+     Provide a brief explanation for your rating.
+     ```
+2. **Generation:**
+   - Sends the prompt to `self.llm.complete()`
+   - Returns the LLM's evaluation
+
+**Example:**
+```python
+evaluation = generator.evaluate_relevance(
+    question="What is Python?",
+    answer="Python is a high-level programming language."
+)
+# Returns: "Rating: 10\nExplanation: The answer directly..."
+```
+
 ---
 
 ## `retriever.py`
@@ -332,6 +402,71 @@ The conversion from LangChain Documents to custom Documents ensures independence
 results = retriever.retrieve("What is Python?", k=3)
 # Returns: [Document(...), Document(...), Document(...)]
 # Ordered by relevance to the query
+```
+
+#### `retrieve_with_scores(query: str, k: int = 5) -> List[Tuple[Document, float]]`
+
+**Purpose:** Retrieves the top-k most semantically similar documents along with their similarity scores.
+
+**Parameters:**
+- `query` (str): The search query text
+- `k` (int, optional): Number of documents to retrieve. Defaults to 5
+
+**Returns:** List of tuples, each containing a Document and its similarity score (float)
+
+**How it works:**
+1. **Search with Scores:**
+   - Accesses the underlying Chroma instance via `self.vs.store`
+   - Calls `similarity_search_with_score(query, k=k)`
+   - This performs similarity search and returns both documents and scores
+2. **Convert Results:**
+   - Iterates through the (document, score) tuples
+   - Converts each LangChain Document to a custom Document
+   - Preserves the score for each document
+3. **Return:**
+   - Returns list of (Document, float) tuples
+   - Lower scores indicate higher similarity in Chroma
+
+**Example:**
+```python
+results = retriever.retrieve_with_scores("What is Python?", k=3)
+for doc, score in results:
+    print(f"Score: {score:.4f} | {doc.page_content[:50]}...")
+# Output:
+# Score: 0.3215 | Python is a high-level programming language...
+# Score: 0.4102 | Python was created by Guido van Rossum...
+# Score: 0.4523 | Python emphasizes code readability...
+```
+
+#### `retrieve_by_source(query: str, source: str, k: int = 5) -> List[Document]`
+
+**Purpose:** Retrieves documents filtered by a specific source file.
+
+**Parameters:**
+- `query` (str): The search query text
+- `source` (str): Source identifier to filter by (e.g., file path)
+- `k` (int, optional): Number of documents to retrieve. Defaults to 5
+
+**Returns:** List of Document objects from the specified source, ordered by relevance
+
+**How it works:**
+1. **Filter Construction:**
+   - Creates a metadata filter dictionary: `{"source": source}`
+2. **Filtered Retrieval:**
+   - Calls the standard `retrieve()` method with the filter
+   - This limits search to documents with matching source metadata
+3. **Return:**
+   - Returns list of filtered documents
+
+**Example:**
+```python
+# Retrieve only from a specific file
+results = retriever.retrieve_by_source(
+    query="machine learning",
+    source="/path/to/ml_guide.pdf",
+    k=5
+)
+# Returns only documents from ml_guide.pdf that match the query
 ```
 
 ---

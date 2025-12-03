@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import json
 import urllib.request
 import urllib.error
@@ -7,7 +7,7 @@ from ..indexing.vector_store import VectorStore
 
 class OllamaEmbedder:
     """
-    A simple Ollama embedder to embed documents and queriesß.
+    A simple Ollama embedder to embed documents and queries.
     """
     def __init__(self, model: str = "nomic-embed-text", base_url: str = "http://localhost:11434"):
         self.model = model
@@ -43,11 +43,36 @@ class OllamaEmbedder:
         return [self._get_embedding(text) for text in texts]
 
 class Retriever:
+    """
+    A simple retriever to retrieve documents from a vector store.
+    """
     def __init__(self, vector_store: VectorStore, embedder: OllamaEmbedder):
         self.vs = vector_store
         self.embedder = embedder
 
     def retrieve(self, query: str, k: int = 5, filter: dict = None) -> List[Document]:
+        """
+        Retrieve documents based on a query.
+        """
         embedding = self.embedder.embed_query(query)
         results = self.vs.store.similarity_search_by_vector(embedding, k=k, filter=filter)
         return [Document(page_content=d.page_content, metadata=d.metadata) for d in results]
+
+    def retrieve_with_scores(self, query: str, k: int = 5) -> List[Tuple[Document, float]]:
+        """
+        Retrieve documents along with their similarity scores.
+        """
+        # Chroma returns (doc, score) tuples when using similarity_search_with_score
+        results = self.vs.store.similarity_search_with_score(query, k=k)
+        
+        output = []
+        for doc, score in results:
+            new_doc = Document(page_content=doc.page_content, metadata=doc.metadata)
+            output.append((new_doc, score))
+        return output
+
+    def retrieve_by_source(self, query: str, source: str, k: int = 5) -> List[Document]:
+        """
+        Retrieve documents filtered by a specific source file.
+        """
+        return self.retrieve(query, k=k, filter={"source": source})

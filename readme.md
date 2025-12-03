@@ -1,10 +1,10 @@
 # DataSage 🧙‍♂️
 
-A lightweight, modular Python package for building Retrieval-Augmented Generation (RAG) systems. DataSage enables you to query your documents using natural language by combining semantic search with large language models.
+A lightweight, modular Python package for building Retrieval-Augmented Generation (RAG) systems. DataSage enables you to query your documents using natural language by combining semantic search with large language models (LLMs).
 
 ## 🌟 Features
 
-- **Document Ingestion**: Support for multiple file formats (CSV, XSLX, PDF, TXT).
+- **Document Ingestion**: Support for multiple file formats (CSV, XLSX, PDF, TXT).
 - **Efficient Chunking**: Configurable text splitting with overlap for context preservation.
 - **Vector Storage**: ChromaDB-backed vector database for efficient similarity search.
 - **Semantic Search**: HuggingFace embeddings for accurate document retrieval.
@@ -31,7 +31,7 @@ DataSage
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/datasage.git
+git clone https://github.com/mzikkhan/datasage.git
 cd datasage
 ```
 
@@ -39,18 +39,6 @@ cd datasage
 
 ```bash
 pip install -r requirements.txt
-```
-
-**Required packages:**
-```txt
-langchain
-langchain-huggingface
-langchain-chroma
-langchain-ollama
-langchain-core
-chromadb
-sentence-transformers
-pypdf
 ```
 
 ### 3. Install Ollama
@@ -69,39 +57,12 @@ Verify installation:
 ollama run llama3.1
 ```
 
-## 📁 Project Structure
-
-```
-datasage/
-├── ingestion/
-│   ├── loaders.py           # Document loaders (PDF, CSV, TXT)
-│   └── chunker.py           # Text chunking utilities
-├── indexing/
-│   ├── embedder.py          # Text embedding using HuggingFace
-│   ├── vector_store.py      # ChromaDB vector storage
-│   └── index_engine.py      # High-level indexing pipeline
-├── query/
-│   ├── retriever.py         # Semantic search retriever
-│   └── generator.py         # LLM answer generation
-└── __init__.py
-```
-
-## 🔧 Configuration
-
-### Indexing Engine Parameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `persist_dir` | `"./datasage_store"` | Directory for vector database |
-| `embedding_model` | `"all-MiniLM-L6-v2"` | HuggingFace embedding model |
-| `chunk_size` | `1000` | Maximum characters per chunk |
-| `overlap` | `200` | Overlapping characters between chunks |
-
 ### Supported File Formats
 
 - **CSV**: Loaded with metadata for each row
 - **PDF**: Extracted page by page
 - **TXT**: Loaded as single document
+- **XLSX**: Extracted sheet by sheet
 
 ## 🎯 Use Cases
 
@@ -124,7 +85,7 @@ datasage/
 
 ### Zaed Khan
 - Sub-package: retrieval
-- Modules: generator.py, retriever.py, data_models.py
+- Modules: rag_engine/__init__.py, generator.py, retriever.py, data_models.py
 
 
 ## 🤝 Contributing
