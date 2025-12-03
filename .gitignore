@@ -208,5 +208,5 @@ __marimo__/
 
 # DataSage specific
 fruits_processed.csv
-main.py
+test_main.py
 vector_db/
