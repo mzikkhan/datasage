@@ -1,4 +1,6 @@
-# Retrieval Subpackage - Function Reference
+# Retrieval Subpackage - Function Details
+
+## Authored by: Zaed Khan
 
 ## Overview
 
@@ -474,4 +476,4 @@ results = retriever.retrieve_by_source(
 ## See Also
 
 - **[documentation.md](./documentation.md)** - Comprehensive usage guide with examples and architecture
-- **[test_retrieval.py](./test_retrieval.py)** - Runnable test demonstrations
+- **[test.py](./test.py)** - Runnable test demonstrations
