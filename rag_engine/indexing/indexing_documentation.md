@@ -17,14 +17,17 @@ The Embedder converts text into numerical vector representations (embeddings) th
 **Purpose:** Transform text into embeddings using HuggingFace models with custom preprocessing.
 
 **Initialization:**
+
 ```python
 embedder = Embedder(model_name="all-MiniLM-L6-v2")
 ```
 
 **Parameters:**
+
 - `model_name` (str): HuggingFace model identifier. Default: "all-MiniLM-L6-v2"
 
 **Custom Features:**
+
 - Text preprocessing for consistency
 - Batch processing with progress tracking
 - Efficient embedding generation
@@ -36,17 +39,21 @@ embedder = Embedder(model_name="all-MiniLM-L6-v2")
 Embeds a single text query into a vector representation.
 
 **How it works:**
+
 1. Preprocesses the text (removes extra whitespace, strips edges)
 2. Generates embedding using the HuggingFace model
 3. Returns a list of floating-point numbers (typically 384 dimensions)
 
 **Parameters:**
+
 - `text` (str): Text to embed
 
 **Returns:**
+
 - List[float]: Embedding vector
 
 **Example:**
+
 ```python
 embedder = Embedder()
 embedding = embedder.embed_query("What is machine learning?")
@@ -55,6 +62,7 @@ print(f"First 5 values: {embedding[:5]}")
 ```
 
 **Custom Logic:**
+
 - `_preprocess_text()`: Normalizes whitespace and removes leading/trailing spaces for consistent embeddings
 
 ---
@@ -64,19 +72,23 @@ print(f"First 5 values: {embedding[:5]}")
 Embeds multiple documents in batch with optional progress tracking.
 
 **How it works:**
+
 1. Iterates through each text in the list
 2. Calls `embed_query()` for each text
 3. Optionally displays progress every 10 documents
 4. Returns list of all embeddings
 
 **Parameters:**
+
 - `texts` (List[str]): List of texts to embed
 - `show_progress` (bool): Whether to show progress updates. Default: False
 
 **Returns:**
+
 - List[List[float]]: List of embedding vectors
 
 **Example:**
+
 ```python
 texts = ["Document 1", "Document 2", "Document 3"]
 embeddings = embedder.embed_documents(texts, show_progress=True)
@@ -85,6 +97,7 @@ embeddings = embedder.embed_documents(texts, show_progress=True)
 ```
 
 **Custom Logic:**
+
 - Progress tracking for large batches
 - Displays updates every 10 documents
 - Final completion message
@@ -96,13 +109,16 @@ embeddings = embedder.embed_documents(texts, show_progress=True)
 Returns the dimensionality of the embedding vectors.
 
 **How it works:**
+
 1. Generates a test embedding with the word "test"
 2. Returns the length of the resulting vector
 
 **Returns:**
+
 - int: Embedding dimension (typically 384 for all-MiniLM-L6-v2)
 
 **Example:**
+
 ```python
 dim = embedder.get_embedding_dimension()
 print(f"This model produces {dim}-dimensional embeddings")
@@ -119,6 +135,7 @@ The VectorStore manages the storage and retrieval of document embeddings using C
 **Purpose:** Store and search document embeddings with custom metadata tracking and analytics.
 
 **Initialization:**
+
 ```python
 vs = VectorStore(
     embedding_model=embedder.model,
@@ -127,10 +144,12 @@ vs = VectorStore(
 ```
 
 **Parameters:**
+
 - `embedding_model`: The embedding function from an Embedder instance
 - `persist_dir` (str, optional): Directory for persistent storage. Default: None (in-memory)
 
 **Custom Features:**
+
 - Automatic document ID assignment
 - Metadata indexing and tracking
 - Source-based organization
@@ -153,6 +172,7 @@ The VectorStore maintains several custom tracking structures:
 Adds documents to the vector store with custom metadata tracking.
 
 **How it works:**
+
 1. Assigns unique document ID (format: `doc_000001`, `doc_000002`, etc.)
 2. Extracts source from document metadata
 3. Records provenance information (source, timestamp, content length)
@@ -162,12 +182,15 @@ Adds documents to the vector store with custom metadata tracking.
 7. Returns list of assigned document IDs
 
 **Parameters:**
+
 - `docs` (List[Document]): List of LangChain Document objects to add
 
 **Returns:**
+
 - List[str]: Assigned document IDs
 
 **Example:**
+
 ```python
 from langchain_core.documents import Document
 
@@ -183,6 +206,7 @@ print(doc_ids)  # ['doc_000000']
 ```
 
 **Custom Logic:**
+
 - Sequential ID generation ensures unique identifiers
 - Metadata indexing enables fast lookups by source
 - Timestamp tracking for provenance
@@ -195,6 +219,7 @@ print(doc_ids)  # ['doc_000000']
 Searches for documents similar to the query with custom analytics.
 
 **How it works:**
+
 1. Records search query for analytics
 2. Performs similarity search using ChromaDB
 3. Enhances results with ranking metadata:
@@ -204,14 +229,17 @@ Searches for documents similar to the query with custom analytics.
 5. Returns enhanced documents
 
 **Parameters:**
+
 - `query` (str): Search query text
 - `k` (int): Number of results to return. Default: 5
 - `filter` (dict, optional): Metadata filter for results
 
 **Returns:**
+
 - List[Document]: Ranked list of relevant documents
 
 **Example:**
+
 ```python
 results = vs.search("machine learning", k=3)
 
@@ -221,6 +249,7 @@ for doc in results:
 ```
 
 **Custom Logic:**
+
 - Tracks all search queries for analytics
 - Adds ranking metadata to results
 - Monitors which sources are most frequently retrieved
@@ -233,25 +262,30 @@ for doc in results:
 Searches within documents from a specific source.
 
 **How it works:**
+
 1. Creates a metadata filter for the specified source
 2. Calls `search()` with the source filter
 3. Returns only documents from that source
 
 **Parameters:**
+
 - `query` (str): Search query
 - `source` (str): Source identifier to filter by
 - `k` (int): Number of results. Default: 5
 
 **Returns:**
+
 - List[Document]: Documents from the specified source
 
 **Example:**
+
 ```python
 # Search only in documents from 'report.pdf'
 results = vs.search_by_source("findings", source="report.pdf", k=3)
 ```
 
 **Custom Logic:**
+
 - Leverages the source index for efficient filtering
 
 ---
@@ -261,12 +295,15 @@ results = vs.search_by_source("findings", source="report.pdf", k=3)
 Returns all unique sources in the vector store.
 
 **How it works:**
+
 - Returns keys from the internal `_source_index` dictionary
 
 **Returns:**
+
 - List[str]: List of source identifiers
 
 **Example:**
+
 ```python
 sources = vs.get_sources()
 print(f"Documents from: {sources}")
@@ -280,16 +317,20 @@ print(f"Documents from: {sources}")
 Returns the number of documents from a specific source.
 
 **How it works:**
+
 - Looks up the source in `_source_index`
 - Returns the length of the document ID list
 
 **Parameters:**
+
 - `source` (str): Source identifier
 
 **Returns:**
+
 - int: Number of documents from that source
 
 **Example:**
+
 ```python
 count = vs.get_document_count_by_source("report.pdf")
 print(f"report.pdf has {count} documents")
@@ -302,12 +343,14 @@ print(f"report.pdf has {count} documents")
 Returns comprehensive analytics about the vector store.
 
 **How it works:**
+
 1. Calculates source distribution (documents per source)
 2. Identifies top 5 most-searched sources
 3. Computes average document length
 4. Aggregates all search statistics
 
 **Returns:**
+
 - Dict: Statistics dictionary with keys:
   - `total_documents`: Total number of indexed documents
   - `unique_sources`: Number of unique sources
@@ -320,6 +363,7 @@ Returns comprehensive analytics about the vector store.
   - `persist_directory`: Storage location
 
 **Example:**
+
 ```python
 stats = vs.get_statistics()
 print(f"Total documents: {stats['total_documents']}")
@@ -328,6 +372,7 @@ print(f"Average doc length: {stats['avg_document_length']}")
 ```
 
 **Custom Logic:**
+
 - Aggregates multiple metrics from internal tracking
 - Provides insights into usage patterns
 - Helps identify popular content
@@ -339,12 +384,15 @@ print(f"Average doc length: {stats['avg_document_length']}")
 Retrieves detailed metadata for a specific document.
 
 **Parameters:**
+
 - `doc_id` (str): Document identifier
 
 **Returns:**
+
 - Optional[Dict]: Metadata dictionary or None if not found
 
 **Example:**
+
 ```python
 info = vs.get_document_info("doc_000001")
 print(f"Source: {info['source']}")
@@ -359,12 +407,15 @@ print(f"Length: {info['content_length']} chars")
 Lists all document IDs from a specific source.
 
 **Parameters:**
+
 - `source` (str): Source identifier
 
 **Returns:**
+
 - List[str]: Document IDs from that source
 
 **Example:**
+
 ```python
 doc_ids = vs.list_documents_by_source("report.pdf")
 print(f"Document IDs from report.pdf: {doc_ids}")
@@ -381,6 +432,7 @@ The IndexingEngine orchestrates the complete indexing pipeline, coordinating all
 **Purpose:** High-level API for indexing documents with validation, progress tracking, and error handling.
 
 **Initialization:**
+
 ```python
 indexer = IndexingEngine(
     persist_dir="./my_index",
@@ -391,12 +443,14 @@ indexer = IndexingEngine(
 ```
 
 **Parameters:**
+
 - `persist_dir` (str): Directory for vector database. Default: "./datasage_store"
 - `embedding_model` (str): HuggingFace model name. Default: "all-MiniLM-L6-v2"
 - `chunk_size` (int): Maximum characters per chunk. Default: 1000
 - `overlap` (int): Overlapping characters between chunks. Default: 200
 
 **Custom Features:**
+
 - Automatic file type detection
 - File validation (existence, readability, size)
 - Duplicate detection
@@ -418,6 +472,7 @@ indexer = IndexingEngine(
 Indexes a single file through the complete pipeline.
 
 **How it works:**
+
 1. **Validation**: Checks file existence, readability, type, and size
 2. **Duplicate Check**: Verifies if file was already indexed
 3. **Loading**: Selects appropriate loader (PDF/CSV/TXT) and loads documents
@@ -427,15 +482,18 @@ Indexes a single file through the complete pipeline.
 7. **Tracking**: Records operation in history with timestamp and duration
 
 **Parameters:**
+
 - `file_path` (str): Path to file to index
 - `metadata` (dict, optional): Additional metadata to attach
 - `force_reindex` (bool): Re-index even if already processed. Default: False
 - `verbose` (bool): Print progress messages. Default: True
 
 **Returns:**
+
 - List[Document]: Created document chunks
 
 **Example:**
+
 ```python
 chunks = indexer.index(
     "report.pdf",
@@ -446,6 +504,7 @@ print(f"Created {len(chunks)} chunks")
 ```
 
 **Custom Logic:**
+
 - Pre-flight validation prevents processing invalid files
 - Duplicate detection saves time and prevents redundancy
 - Progress tracking provides visibility into long operations
@@ -458,6 +517,7 @@ print(f"Created {len(chunks)} chunks")
 Indexes multiple files with error recovery.
 
 **How it works:**
+
 1. Iterates through each file
 2. Attempts to index each one
 3. On error: logs failure and continues (if `continue_on_error=True`)
@@ -465,15 +525,18 @@ Indexes multiple files with error recovery.
 5. Prints summary statistics
 
 **Parameters:**
+
 - `file_paths` (List[str]): List of file paths
 - `metadata` (dict, optional): Metadata for all files
 - `continue_on_error` (bool): Continue if a file fails. Default: True
 - `verbose` (bool): Print progress. Default: True
 
 **Returns:**
+
 - Dict[str, List[Document]]: Maps file paths to created chunks
 
 **Example:**
+
 ```python
 files = ["doc1.pdf", "doc2.csv", "doc3.txt"]
 results = indexer.batch_index(files, verbose=True)
@@ -483,6 +546,7 @@ for file, chunks in results.items():
 ```
 
 **Custom Logic:**
+
 - Error recovery allows batch operations to complete even with failures
 - Per-file progress tracking
 - Aggregated statistics
@@ -494,17 +558,21 @@ for file, chunks in results.items():
 Convenience method to search indexed documents.
 
 **How it works:**
+
 - Delegates to `vector_store.search()`
 
 **Parameters:**
+
 - `query` (str): Search query
 - `k` (int): Number of results. Default: 5
 - `filter` (dict, optional): Metadata filter
 
 **Returns:**
+
 - List[Document]: Search results
 
 **Example:**
+
 ```python
 results = indexer.search("machine learning", k=3)
 ```
@@ -516,6 +584,7 @@ results = indexer.search("machine learning", k=3)
 Returns list of successfully indexed files.
 
 **Returns:**
+
 - List[str]: File paths
 
 ---
@@ -525,9 +594,11 @@ Returns list of successfully indexed files.
 Returns dictionary of failed files and their errors.
 
 **Returns:**
+
 - Dict[str, str]: Maps file path to error message
 
 **Example:**
+
 ```python
 failed = indexer.get_failed_files()
 for file, error in failed.items():
@@ -541,6 +612,7 @@ for file, error in failed.items():
 Returns complete history of indexing operations.
 
 **Returns:**
+
 - List[Dict]: List of operation records containing:
   - `file_path`: File that was indexed
   - `timestamp`: When operation started
@@ -551,6 +623,7 @@ Returns complete history of indexing operations.
   - `error`: Error message (if failed)
 
 **Example:**
+
 ```python
 history = indexer.get_indexing_history()
 for entry in history:
@@ -564,18 +637,21 @@ for entry in history:
 Returns comprehensive system-wide statistics.
 
 **How it works:**
+
 1. Aggregates indexing history statistics
 2. Includes configuration details
 3. Pulls vector store statistics
 4. Combines into single report
 
 **Returns:**
+
 - Dict: Statistics with keys:
   - `indexing`: Files indexed, failed, total chunks, timing
   - `configuration`: Chunk size, overlap, model info
   - `vector_store`: All vector store statistics
 
 **Example:**
+
 ```python
 stats = indexer.get_system_statistics()
 print(f"Files indexed: {stats['indexing']['files_indexed']}")
@@ -584,6 +660,7 @@ print(f"Model: {stats['configuration']['embedding_model']}")
 ```
 
 **Custom Logic:**
+
 - Aggregates metrics across all components
 - Provides single view of system health
 - Useful for monitoring and debugging
@@ -595,6 +672,7 @@ print(f"Model: {stats['configuration']['embedding_model']}")
 Clears indexing history (keeps indexed files tracked).
 
 **Example:**
+
 ```python
 indexer.reset_history()
 ```
@@ -638,11 +716,13 @@ print(f"Total documents: {stats['vector_store']['total_documents']}")
 ### What Makes This OOP (Not Just Library Wrappers)?
 
 **Embedder:**
+
 - Custom preprocessing pipeline
 - Batch progress tracking
 - Dimension introspection
 
 **VectorStore:**
+
 - Automatic document ID generation
 - Metadata indexing by source
 - Search analytics and tracking
@@ -650,6 +730,7 @@ print(f"Total documents: {stats['vector_store']['total_documents']}")
 - Source-based filtering
 
 **IndexingEngine:**
+
 - File validation (type, existence, size, permissions)
 - Duplicate detection
 - Automatic loader selection
