@@ -16,13 +16,6 @@ rag_engine/retrieval/
 └── README.md          # Module reference
 ```
 
-### Design Principles
-
-1. **Minimal Dependencies**: Uses only Python standard library (`urllib`, `json`) for HTTP requests
-2. **Ollama Integration**: Direct API calls to local Ollama instance
-3. **Custom Data Models**: Independent `Document` class for portability
-4. **Separation of Concerns**: Clear division between embedding, retrieval, and generation
-
 ## Components
 
 ### 1. Data Models (`data_models.py`)
@@ -77,24 +70,6 @@ docs = [
     Document(page_content="Python is known for its simplicity.", metadata={})
 ]
 answer = generator.generate_answer("Who created Python?", docs)
-```
-
-**Additional Methods:**
-- `summarize_docs(docs: List[Document]) -> str`: Generates a concise bullet-point summary from documents
-- `evaluate_relevance(question: str, answer: str) -> str`: Evaluates and rates how well an answer addresses a question
-
-**Example:**
-```python
-# Summarize documents
-summary = generator.summarize_docs(docs)
-print(summary)  # Returns bullet-point summary
-
-# Evaluate answer quality
-evaluation = generator.evaluate_relevance(
-    question="Who created Python?",
-    answer="Python was created by Guido van Rossum."
-)
-print(evaluation)  # Returns rating and explanation
 ```
 
 **Additional Methods:**
@@ -197,58 +172,3 @@ answer = generator.generate_answer(question, context_docs)
 print(f"Q: {question}")
 print(f"A: {answer}")
 ```
-
-## Configuration
-
-### Ollama Settings
-
-Both `Ollama` and `OllamaEmbedder` connect to a local Ollama instance:
-
-- **Default URL**: `http://localhost:11434`
-- **Custom URL**: Pass `base_url` parameter to constructor
-
-```python
-ollama = Ollama(model="llama3.1", base_url="http://custom-host:11434")
-embedder = OllamaEmbedder(model="nomic-embed-text", base_url="http://custom-host:11434")
-```
-
-### Model Selection
-
-- **LLM Models**: Any Ollama-compatible model (e.g., `llama3.1`, `mistral`, `codellama`)
-- **Embedding Models**: Ollama embedding models (e.g., `nomic-embed-text`, `mxbai-embed-large`)
-
-## Error Handling
-
-All network operations include error handling for common issues:
-
-```python
-try:
-    response = ollama.complete("What is AI?")
-except Exception as e:
-    print(f"Error: {e}")
-    # Possible errors:
-    # - Connection refused (Ollama not running)
-    # - Invalid model name
-    # - API timeout
-```
-
-## Performance Considerations
-
-1. **Batch Embedding**: Use `embed_documents()` for multiple texts instead of calling `embed_query()` in a loop
-2. **Connection Pooling**: The `urllib` implementation creates a new connection per request
-3. **Model Sizing**: Larger models provide better quality but slower response times
-
-## Testing
-
-See `test_retrieval.py` for comprehensive usage examples and unit tests.
-
-## Dependencies
-
-- Python 3.8+
-- Ollama (running locally)
-- Vector store backend (managed by `indexing` subpackage)
-
-## See Also
-
-- [README.md](./README.md) - Module and function reference
-- [Ollama API Documentation](https://github.com/ollama/ollama/blob/main/docs/api.md)
