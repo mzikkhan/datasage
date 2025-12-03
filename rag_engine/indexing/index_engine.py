@@ -1,6 +1,6 @@
 """
 Enhanced Indexing Engine with validation, progress tracking, and orchestration.
-This module coordinates the complete indexing pipeline with custom logic.
+This module coordinates the complete indexing pipeline.
 """
 
 import os
@@ -47,7 +47,6 @@ class IndexingEngine:
             chunk_size: Maximum characters per chunk
             overlap: Overlapping characters between chunks
         """
-        # Initialize components
         self.chunker = TextChunker(chunk_size=chunk_size, overlap=overlap)
         self.embedder = Embedder(model_name=embedding_model)
         self.vector_store = VectorStore(
@@ -59,12 +58,9 @@ class IndexingEngine:
         self.chunk_size = chunk_size
         self.overlap = overlap
         
-        # Custom tracking
         self._indexed_files: Set[str] = set()
         self._failed_files: Dict[str, str] = {}
         self._indexing_history: List[Dict] = []
-        
-        # Supported file extensions
         self._supported_extensions = {'.pdf', '.csv', '.txt'}
     
     def _validate_file(self, file_path: str) -> None:
@@ -84,20 +80,17 @@ class IndexingEngine:
             FileNotFoundError: If file doesn't exist
             ValueError: If file is invalid
         """
-        # Check existence
+        
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")
         
-        # Check if it's a file (not directory)
         if not os.path.isfile(file_path):
             raise ValueError(f"Path is not a file: {file_path}")
         
-        # Check file size
         file_size = os.path.getsize(file_path)
         if file_size == 0:
             raise ValueError(f"File is empty: {file_path}")
         
-        # Check file extension
         ext = os.path.splitext(file_path)[1].lower()
         if ext not in self._supported_extensions:
             raise ValueError(
@@ -190,13 +183,13 @@ class IndexingEngine:
                 print("Step 1: Validating file...")
             self._validate_file(file_path)
             if verbose:
-                print(f"✓ File validation passed")
+                print(f"File validation passed")
             
             # Step 2: Check for duplicates
             normalized_path = os.path.abspath(file_path)
             if self._check_duplicate(file_path) and not force_reindex:
                 if verbose:
-                    print(f"⚠ Warning: File already indexed. Use force_reindex=True to re-index.")
+                    print(f"Warning: File already indexed. Use force_reindex=True to re-index.")
                 return []
             
             # Step 3: Load documents
@@ -206,9 +199,10 @@ class IndexingEngine:
             if verbose:
                 print(f"Using loader: {loader.__class__.__name__}")
             
-            docs = loader.load(file_path)
+            # New loaders take a LIST of paths
+            docs = loader.load([file_path])
             if verbose:
-                print(f"✓ Loaded {len(docs)} document(s)")
+                print(f"Loaded {len(docs)} document(s)")
             
             # Step 4: Apply custom metadata
             if metadata:
@@ -220,18 +214,19 @@ class IndexingEngine:
             # Step 5: Chunk documents
             if verbose:
                 print("Step 4: Chunking documents...")
-            chunks = self.chunker.chunk_documents(docs)
+            # Changed from chunk_documents to chunk_docs
+            chunks = self.chunker.chunk_docs(docs)
             if verbose:
-                print(f"✓ Created {len(chunks)} chunk(s)")
-                print(f"  Chunk size: {self.chunk_size} chars")
-                print(f"  Overlap: {self.overlap} chars")
+                print(f"Created {len(chunks)} chunk(s)")
+                print(f"Chunk size: {self.chunk_size} chars")
+                print(f"Overlap: {self.overlap} chars")
             
             # Step 6: Store in vector database
             if verbose:
                 print("Step 5: Storing in vector database...")
             doc_ids = self.vector_store.add_documents(chunks)
             if verbose:
-                print(f"✓ Stored {len(chunks)} chunks in vector database")
+                print(f"Stored {len(chunks)} chunks in vector database")
             
             # Step 7: Update tracking
             self._indexed_files.add(normalized_path)
@@ -324,14 +319,14 @@ class IndexingEngine:
                 successful += 1
                 
                 if verbose:
-                    print(f"✓ Success: {len(chunks)} chunks created\n")
+                    print(f"Success: {len(chunks)} chunks created\n")
                     
             except Exception as e:
                 failed += 1
                 results[file_path] = []
                 
                 if verbose:
-                    print(f"✗ Failed: {e}\n")
+                    print(f"Failed: {e}\n")
                 
                 if not continue_on_error:
                     raise
@@ -388,7 +383,6 @@ class IndexingEngine:
         Returns:
             Dictionary of system statistics
         """
-        # Calculate indexing statistics
         total_chunks = sum(
             entry.get("chunks_created", 0) 
             for entry in self._indexing_history 
