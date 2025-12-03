@@ -59,24 +59,6 @@ def main():
         for source, count in stats['source_distribution'].items():
             source_name = os.path.basename(source)
             print(f"      - {source_name}: {count} documents")
-    
-    # FUNCTION 5: Add Knowledge to your Knowledge Base
-    temp_file = "additional_info.txt"
-    with open(temp_file, "w") as f:
-        f.write("This is additional information that will be added to the knowledge base.")
-    
-    try:
-        message = engine.add_knowledge([temp_file])
-        print(f"✅ {message}")
-        
-        # Show updated stats
-        new_stats = engine.get_knowledge_stats()
-        print(f"\n📊 Updated total documents: {new_stats.get('total_documents', 0)}")
-    finally:
-        # Clean up temporary file
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
-            print(f"🗑️  Temporary file '{temp_file}' removed")
 
 
 if __name__ == "__main__":
