@@ -5,9 +5,10 @@ from .ingestion.chunker import TextChunker
 from .ingestion.loaders import DocumentLoader
 from .ingestion.loaders import PDFLoader
 from .ingestion.loaders import CSVLoader
+from .ingestion.loaders import TXTLoader
 from .retrieval.retriever import Retriever
 from .retrieval.generator import LLMGenerator 
-from typing import List
+from typing import List, Dict
 
 __all__ = [
     "IndexingEngine",
@@ -25,12 +26,16 @@ class RagEngine:
     def __init__(self, data_files: List[str], model_name: str = "llama3.1", metadata: dict = None):
 
         # 1) Load documents
+        # Ensure data_files is a list
+        if isinstance(data_files, str):
+            data_files = [data_files]
+        
         loader = self._choose_loader(data_files)
         docs = loader.load(data_files)
 
         # 2) Split into chunks
         chunker = TextChunker()
-        chunks = chunker.chunk_documents(docs)
+        chunks = chunker.chunk_docs(docs)
 
         # 3) Initialize embedding and vector store
         embedder = Embedder(model_name="BAAI/bge-small-en-v1.5")
@@ -39,7 +44,10 @@ class RagEngine:
             persist_dir="./vector_db"
         )
 
-        # stores chunks
+        # stores chunks (filter out empty ones)
+        chunks = [c for c in chunks if c.page_content.strip()]
+        if not chunks:
+            raise ValueError("No valid content found in the documents after chunking")
         vs.add_documents(chunks)  
 
         # 4) Prepare retriever and generator
@@ -57,6 +65,8 @@ class RagEngine:
             return PDFLoader()
         elif filename.endswith(".csv"):
             return CSVLoader()
+        elif filename.endswith(".txt"):
+            return TXTLoader()
         else:
             raise ValueError(f"Unsupported file type: {filename}")
 
@@ -85,3 +95,39 @@ class RagEngine:
         summary_prompt = "Summarize in concise bullet points the key ideas in the data"
         summary = self.generator.generate_answer(summary_prompt, docs)
         return summary
+
+    # Function 3
+    def search_documents(self, query: str, top_k: int = 5) -> List[Dict]:
+        """
+        Retrieve relevant documents without generating an answer.
+        Useful for inspecting what the RAG engine is finding.
+        """
+        docs = self.retriever.retrieve(query, k=top_k)
+        return [{"content": d.page_content, "source": d.metadata} for d in docs]
+
+    # Function 4
+    def get_knowledge_stats(self) -> Dict:
+        """
+        Return statistics about the underlying vector database,
+        including total documents, sources, and search metrics.
+        """
+        return self.retriever.vs.get_statistics()
+
+    # Function 5
+    def add_knowledge(self, file_paths: List[str]) -> str:
+        """
+        Ingest additional documents into the existing knowledge base.
+        """
+        loader = self._choose_loader(file_paths)
+        docs = loader.load(file_paths)
+        
+        chunker = TextChunker()
+        chunks = chunker.chunk_docs(docs)
+        
+        # Filter out empty chunks
+        chunks = [c for c in chunks if c.page_content.strip()]
+        if not chunks:
+            return "No valid content found in the provided files"
+        
+        self.retriever.vs.add_documents(chunks)
+        return f"Successfully added {len(chunks)} new chunks to the knowledge base."

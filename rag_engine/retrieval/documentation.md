@@ -79,6 +79,42 @@ docs = [
 answer = generator.generate_answer("Who created Python?", docs)
 ```
 
+**Additional Methods:**
+- `summarize_docs(docs: List[Document]) -> str`: Generates a concise bullet-point summary from documents
+- `evaluate_relevance(question: str, answer: str) -> str`: Evaluates and rates how well an answer addresses a question
+
+**Example:**
+```python
+# Summarize documents
+summary = generator.summarize_docs(docs)
+print(summary)  # Returns bullet-point summary
+
+# Evaluate answer quality
+evaluation = generator.evaluate_relevance(
+    question="Who created Python?",
+    answer="Python was created by Guido van Rossum."
+)
+print(evaluation)  # Returns rating and explanation
+```
+
+**Additional Methods:**
+- `summarize_docs(docs: List[Document]) -> str`: Generates a concise bullet-point summary from documents
+- `evaluate_relevance(question: str, answer: str) -> str`: Evaluates and rates how well an answer addresses a question
+
+**Example:**
+```python
+# Summarize documents
+summary = generator.summarize_docs(docs)
+print(summary)  # Returns bullet-point summary
+
+# Evaluate answer quality
+evaluation = generator.evaluate_relevance(
+    question="Who created Python?",
+    answer="Python was created by Guido van Rossum."
+)
+print(evaluation)  # Returns rating and explanation
+```
+
 ### 3. Retriever (`retriever.py`)
 
 #### `OllamaEmbedder` Class
@@ -105,6 +141,8 @@ Retrieves relevant documents from a vector store based on semantic similarity.
 
 **Methods:**
 - `retrieve(query: str, k: int = 5, filter: dict = None) -> List[Document]`: Retrieves the top-k most relevant documents
+- `retrieve_with_scores(query: str, k: int = 5) -> List[Tuple[Document, float]]`: Retrieves documents with their similarity scores
+- `retrieve_by_source(query: str, source: str, k: int = 5) -> List[Document]`: Retrieves documents filtered by a specific source file
 
 **Example:**
 ```python
@@ -121,6 +159,18 @@ retriever = Retriever(vector_store=vs, embedder=OllamaEmbedder())
 
 # Retrieve documents
 docs = retriever.retrieve("What is Python?", k=5)
+
+# Retrieve with similarity scores
+results = retriever.retrieve_with_scores("machine learning", k=3)
+for doc, score in results:
+    print(f"Score: {score:.4f} | {doc.page_content[:50]}...")
+
+# Retrieve from specific source
+source_docs = retriever.retrieve_by_source(
+    query="neural networks",
+    source="/path/to/ml_book.pdf",
+    k=5
+)
 ```
 
 ## Complete Workflow Example

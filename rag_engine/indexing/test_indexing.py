@@ -6,14 +6,12 @@ Tests embedder, vector_store, and index_engine with custom logic.
 import sys
 import os
 
-# Add parent directory to Python path
+# Add grandparent directory (datasage_v2) to Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
+parent_dir = os.path.dirname(current_dir)  # rag_engine
+grandparent_dir = os.path.dirname(parent_dir)  # datasage_v2
+sys.path.insert(0, grandparent_dir)
 
-print("Starting Indexing Module Tests...\n")
-
-# Now do the imports
 from rag_engine.indexing.embedder import Embedder
 from rag_engine.indexing.vector_store import VectorStore
 from rag_engine.indexing.index_engine import IndexingEngine
