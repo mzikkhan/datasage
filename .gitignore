@@ -210,3 +210,4 @@ __marimo__/
 fruits_processed.csv
 test_main.py
 vector_db/
+rag_engine/vector_db
