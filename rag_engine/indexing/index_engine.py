@@ -1,6 +1,6 @@
 """
 Enhanced Indexing Engine with validation, progress tracking, and orchestration.
-This module coordinates the complete indexing pipeline with custom logic.
+This module coordinates the complete indexing pipeline.
 """
 
 import os
@@ -47,7 +47,6 @@ class IndexingEngine:
             chunk_size: Maximum characters per chunk
             overlap: Overlapping characters between chunks
         """
-        # Initialize components
         self.chunker = TextChunker(chunk_size=chunk_size, overlap=overlap)
         self.embedder = Embedder(model_name=embedding_model)
         self.vector_store = VectorStore(
@@ -59,12 +58,10 @@ class IndexingEngine:
         self.chunk_size = chunk_size
         self.overlap = overlap
         
-        # Custom tracking
         self._indexed_files: Set[str] = set()
         self._failed_files: Dict[str, str] = {}
         self._indexing_history: List[Dict] = []
         
-        # Supported file extensions
         self._supported_extensions = {'.pdf', '.csv', '.txt'}
     
     def _validate_file(self, file_path: str) -> None:
@@ -84,20 +81,16 @@ class IndexingEngine:
             FileNotFoundError: If file doesn't exist
             ValueError: If file is invalid
         """
-        # Check existence
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")
         
-        # Check if it's a file (not directory)
         if not os.path.isfile(file_path):
             raise ValueError(f"Path is not a file: {file_path}")
         
-        # Check file size
         file_size = os.path.getsize(file_path)
         if file_size == 0:
             raise ValueError(f"File is empty: {file_path}")
         
-        # Check file extension
         ext = os.path.splitext(file_path)[1].lower()
         if ext not in self._supported_extensions:
             raise ValueError(
@@ -105,7 +98,6 @@ class IndexingEngine:
                 f"Supported types: {', '.join(self._supported_extensions)}"
             )
         
-        # Check read permissions
         if not os.access(file_path, os.R_OK):
             raise ValueError(f"File is not readable: {file_path}")
     
@@ -147,7 +139,6 @@ class IndexingEngine:
         Returns:
             True if file was already indexed
         """
-        # Normalize path for comparison
         normalized_path = os.path.abspath(file_path)
         return normalized_path in self._indexed_files
     
@@ -236,7 +227,6 @@ class IndexingEngine:
             # Step 7: Update tracking
             self._indexed_files.add(normalized_path)
             
-            # Record in history
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             
@@ -258,9 +248,8 @@ class IndexingEngine:
                 print(f"{'='*60}\n")
             
             return chunks
-            
+        
         except Exception as e:
-            # Record failure
             self._failed_files[file_path] = str(e)
             
             history_entry = {
@@ -352,7 +341,7 @@ class IndexingEngine:
         filter: Optional[dict] = None
     ) -> List[Document]:
         """
-        Search the indexed documents.
+        Search indexed documents.
         
         Args:
             query: Search query
@@ -378,7 +367,7 @@ class IndexingEngine:
     
     def get_system_statistics(self) -> Dict:
         """
-        Get comprehensive system-wide statistics.
+        Get aggregate statistics for package components.
         
         Aggregates statistics from all components:
         - Indexing history
@@ -388,7 +377,7 @@ class IndexingEngine:
         Returns:
             Dictionary of system statistics
         """
-        # Calculate indexing statistics
+        
         total_chunks = sum(
             entry.get("chunks_created", 0) 
             for entry in self._indexing_history 

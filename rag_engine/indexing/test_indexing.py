@@ -8,8 +8,8 @@ import os
 
 # Add grandparent directory (datasage_v2) to Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)  # rag_engine
-grandparent_dir = os.path.dirname(parent_dir)  # datasage_v2
+parent_dir = os.path.dirname(current_dir)     
+grandparent_dir = os.path.dirname(parent_dir)
 sys.path.insert(0, grandparent_dir)
 
 from rag_engine.indexing.embedder import Embedder
@@ -27,7 +27,7 @@ try:
     from rag_engine.indexing.embedder import Embedder
     from rag_engine.indexing.vector_store import VectorStore
     from rag_engine.indexing.index_engine import IndexingEngine
-    print("✓ All imports successful")
+    print("All imports successful")
 except ImportError as e:
     print(f"✗ Import failed: {e}")
     exit(1)
@@ -41,14 +41,14 @@ print("=" * 60)
 
 try:
     embedder = Embedder(model_name="all-MiniLM-L6-v2")
-    print("✓ Embedder initialized")
+    print("Embedder initialized")
     
     # Test single query
     test_text = "Hello, this is a test"
     embedding = embedder.embed_query(test_text)
-    print(f"✓ Embedded query: '{test_text}'")
-    print(f"  Embedding dimension: {len(embedding)}")
-    print(f"  First 5 values: {embedding[:5]}")
+    print(f"Embedded query: '{test_text}'")
+    print(f"Embedding dimension: {len(embedding)}")
+    print(f"First 5 values: {embedding[:5]}")
     
     # Test batch embedding
     print(f"\nTesting batch embedding...")
@@ -61,7 +61,7 @@ try:
     print(f"✓ Embedding dimension: {dim}")
     
 except Exception as e:
-    print(f"✗ Embedder test failed: {e}")
+    print(f"Embedder test failed: {e}")
     import traceback
     traceback.print_exc()
     exit(1)
@@ -108,7 +108,7 @@ try:
     # Search
     print(f"\nSearching for 'programming languages'...")
     results = vs.search("programming languages", k=2)
-    print(f"✓ Search returned {len(results)} results")
+    print(f"Search returned {len(results)} results")
     for i, doc in enumerate(results, 1):
         print(f"  Result {i}: {doc.page_content[:50]}...")
         print(f"    Rank: {doc.metadata.get('search_rank')}")
@@ -117,21 +117,21 @@ try:
     # Get statistics
     print(f"\nGetting VectorStore statistics...")
     vs_stats = vs.get_statistics()
-    print(f"✓ VectorStore statistics:")
-    print(f"  Total documents: {vs_stats['total_documents']}")
-    print(f"  Unique sources: {vs_stats['unique_sources']}")
-    print(f"  Total searches: {vs_stats['total_searches']}")
+    print(f"VectorStore statistics:")
+    print(f"Total documents: {vs_stats['total_documents']}")
+    print(f"Unique sources: {vs_stats['unique_sources']}")
+    print(f"Total searches: {vs_stats['total_searches']}")
     
     # Test source filtering
     print(f"\nTesting source-based operations...")
     sources = vs.get_sources()
-    print(f"✓ Found sources: {sources}")
+    print(f"Found sources: {sources}")
     for source in sources:
         count = vs.get_document_count_by_source(source)
         print(f"  {source}: {count} documents")
     
 except Exception as e:
-    print(f"✗ VectorStore test failed: {e}")
+    print(f"VectorStore test failed: {e}")
     import traceback
     traceback.print_exc()
     exit(1)
@@ -151,24 +151,24 @@ try:
         chunk_size=500,
         overlap=50
     )
-    print("✓ IndexingEngine initialized")
-    print(f"  Persist directory: ./test_index")
-    print(f"  Chunk size: 500")
-    print(f"  Overlap: 50")
+    print("IndexingEngine initialized")
+    print(f"Persist directory: ./test_index")
+    print(f"Chunk size: 500")
+    print(f"Overlap: 50")
     
     # Check if fruits_processed.csv exists
     import os
     if os.path.exists("fruits_processed.csv"):
-        print(f"\n✓ Found fruits_processed.csv")
+        print(f"\nFound fruits_processed.csv")
         
         # Index the file
         print(f"\nIndexing fruits_processed.csv...")
         chunks = indexer.index("fruits_processed.csv", verbose=True)
-        print(f"\n✓ Indexing complete: {len(chunks)} chunks created")
+        print(f"\nIndexing complete: {len(chunks)} chunks created")
         
         # Get indexed files
         indexed_files = indexer.get_indexed_files()
-        print(f"✓ Indexed files: {len(indexed_files)}")
+        print(f"Indexed files: {len(indexed_files)}")
         for f in indexed_files:
             print(f"  - {f}")
         
@@ -176,19 +176,19 @@ try:
         print(f"\nTesting duplicate detection...")
         chunks2 = indexer.index("fruits_processed.csv", verbose=False)
         if len(chunks2) == 0:
-            print(f"✓ Duplicate detection working - prevented re-indexing")
+            print(f"Duplicate detection working - prevented re-indexing")
         
         # Search
         print(f"\nTesting search functionality...")
         results = indexer.search("apple fruit", k=3)
-        print(f"✓ Search returned {len(results)} results")
+        print(f"Search returned {len(results)} results")
         for i, doc in enumerate(results, 1):
-            print(f"  Result {i}: {doc.page_content[:60]}...")
+            print(f"Result {i}: {doc.page_content[:60]}...")
         
         # Get indexing history
         print(f"\nGetting indexing history...")
         history = indexer.get_indexing_history()
-        print(f"✓ Found {len(history)} indexing operations")
+        print(f"Found {len(history)} indexing operations")
         for entry in history:
             status = entry.get('status', 'unknown')
             chunks_created = entry.get('chunks_created', 0)
@@ -197,14 +197,14 @@ try:
         # Get system statistics
         print(f"\nGetting system statistics...")
         stats = indexer.get_system_statistics()
-        print(f"✓ System statistics:")
-        print(f"  Files indexed: {stats['indexing']['files_indexed']}")
-        print(f"  Total chunks: {stats['indexing']['total_chunks_created']}")
-        print(f"  Total searches: {stats['vector_store']['total_searches']}")
+        print(f"System statistics:")
+        print(f"Files indexed: {stats['indexing']['files_indexed']}")
+        print(f"Total chunks: {stats['indexing']['total_chunks_created']}")
+        print(f"Total searches: {stats['vector_store']['total_searches']}")
         
     else:
-        print("⚠ fruits_processed.csv not found")
-        print("  Creating a simple test file...")
+        print("fruits_processed.csv not found")
+        print("Creating a simple test file...")
         
         # Create a simple test CSV
         with open("test_data.csv", "w") as f:
@@ -217,7 +217,7 @@ try:
         print(f"✓ Indexed test file: {len(chunks)} chunks")
     
 except Exception as e:
-    print(f"✗ IndexingEngine test failed: {e}")
+    print(f"IndexingEngine test failed: {e}")
     import traceback
     traceback.print_exc()
     exit(1)
@@ -234,10 +234,10 @@ try:
     print("Testing with non-existent file...")
     try:
         indexer.index("nonexistent_file.csv", verbose=False)
-        print("✗ Should have raised FileNotFoundError")
+        print("Should have raised FileNotFoundError")
     except FileNotFoundError as e:
-        print(f"✓ Correctly caught missing file")
-        print(f"  Error: {str(e)[:60]}...")
+        print(f"Correctly caught missing file")
+        print(f"Error: {str(e)[:60]}...")
     
     # Test with unsupported file type
     print("\nTesting with unsupported file type...")
@@ -248,10 +248,10 @@ try:
     
     try:
         indexer.index("test.xyz", verbose=False)
-        print("✗ Should have raised ValueError for unsupported type")
+        print("Should have raised ValueError for unsupported type")
     except ValueError as e:
-        print(f"✓ Correctly caught unsupported file type")
-        print(f"  Error: {str(e)[:60]}...")
+        print(f"Correctly caught unsupported file type")
+        print(f"Error: {str(e)[:60]}...")
     finally:
         # Clean up
         import os
@@ -273,40 +273,40 @@ try:
     successful = sum(1 for chunks in results.values() if len(chunks) > 0)
     failed = sum(1 for chunks in results.values() if len(chunks) == 0)
     
-    print(f"✓ Batch indexing completed")
-    print(f"  Successful: {successful}")
-    print(f"  Failed: {failed}")
+    print(f"Batch indexing completed")
+    print(f"Successful: {successful}")
+    print(f"Failed: {failed}")
     
     failed_files = indexer.get_failed_files()
     if failed_files:
-        print(f"  Failed files:")
+        print(f"Failed files:")
         for file, error in failed_files.items():
             print(f"    - {file}: {error[:50]}...")
     
-    print("✓ Error handling works correctly")
+    print("Error handling works correctly")
     
 except Exception as e:
-    print(f"✗ Error handling test failed: {e}")
+    print(f"Error handling test failed: {e}")
     import traceback
     traceback.print_exc()
 
 print()
 
-# Final Summary
+# Test Summary
 print("=" * 60)
 print("TEST SUMMARY")
 print("=" * 60)
-print("✓ All tests completed successfully!")
+print("All tests completed successfully!")
 print()
 print("Custom Logic Verified:")
-print("  ✓ Embedder: Text preprocessing")
-print("  ✓ Embedder: Batch processing with progress")
-print("  ✓ VectorStore: Metadata indexing and tracking")
-print("  ✓ VectorStore: Source-based filtering")
-print("  ✓ VectorStore: Relevance scoring")
-print("  ✓ IndexingEngine: File validation")
-print("  ✓ IndexingEngine: Duplicate detection")
-print("  ✓ IndexingEngine: Progress tracking")
-print("  ✓ IndexingEngine: Batch processing")
-print("  ✓ IndexingEngine: Error handling")
+print("Embedder: Text preprocessing")
+print("Embedder: Batch processing with progress")
+print("VectorStore: Metadata indexing and tracking")
+print("VectorStore: Source-based filtering")
+print("VectorStore: Relevance scoring")
+print("IndexingEngine: File validation")
+print("IndexingEngine: Duplicate detection")
+print("IndexingEngine: Progress tracking")
+print("IndexingEngine: Batch processing")
+print("IndexingEngine: Error handling")
 print("=" * 60)

@@ -1,14 +1,12 @@
 """
 Enhanced Vector Store with custom metadata indexing and analytics.
-This module provides intelligent vector storage with additional tracking capabilities.
+This module provides intelligent vector storage with added tracking capabilities.
 """
 
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from datetime import datetime
-import os
-
 
 class VectorStore:
     """
@@ -36,7 +34,6 @@ class VectorStore:
         )
         self.persist_dir = persist_dir
         
-        # Custom document tracking
         self._doc_count = 0
         self._metadata_index: Dict[str, Dict] = {}
         self._source_index: Dict[str, List[str]] = {}
@@ -68,14 +65,11 @@ class VectorStore:
         doc_ids = []
         
         for doc in docs:
-            # Assign unique document ID
             doc_id = f"doc_{self._doc_count:06d}"
             doc_ids.append(doc_id)
             
-            # Extract source from metadata
             source = doc.metadata.get("source", "unknown")
             
-            # Custom metadata tracking
             self._metadata_index[doc_id] = {
                 "source": source,
                 "timestamp": datetime.now().isoformat(),
@@ -83,18 +77,15 @@ class VectorStore:
                 "original_metadata": doc.metadata.copy()
             }
             
-            # Index by source for fast lookups
             if source not in self._source_index:
                 self._source_index[source] = []
             self._source_index[source].append(doc_id)
             
-            # Add doc_id to document metadata
             doc.metadata["doc_id"] = doc_id
             doc.metadata["indexed_at"] = datetime.now().isoformat()
             
             self._doc_count += 1
         
-        # Add to vector store
         self.store.add_documents(docs)
         
         print(f"Added {len(docs)} documents (IDs: {doc_ids[0]} to {doc_ids[-1]})")
@@ -118,23 +109,17 @@ class VectorStore:
         Returns:
             List of relevant Document objects with enhanced metadata
         """
-        # Update search statistics
         self._search_stats["total_searches"] += 1
         self._search_stats["unique_queries"].add(query)
         
-        # Perform similarity search
         results = self.store.similarity_search(query, k=k, filter=filter)
         
-        # Update statistics
         self._search_stats["total_results_returned"] += len(results)
         
-        # Enhance results with custom metadata
         for i, doc in enumerate(results):
-            # Add ranking information
             doc.metadata["search_rank"] = i + 1
             doc.metadata["relevance_score"] = 1.0 / (i + 1)  # Simple inverse rank
             
-            # Track source popularity
             source = doc.metadata.get("source", "unknown")
             self._search_stats["popular_sources"][source] = (
                 self._search_stats["popular_sources"].get(source, 0) + 1
@@ -156,7 +141,6 @@ class VectorStore:
         Returns:
             Documents from the specified source
         """
-        # Use source-based filtering
         filter_dict = {"source": source}
         return self.search(query, k=k, filter=filter_dict)
     
@@ -194,20 +178,19 @@ class VectorStore:
         Returns:
             Dictionary of statistics
         """
-        # Calculate source distribution
+        # Calculate src distribution
         source_distribution = {
             source: len(doc_ids) 
             for source, doc_ids in self._source_index.items()
         }
         
-        # Get most popular sources from searches
         top_sources = sorted(
             self._search_stats["popular_sources"].items(),
             key=lambda x: x[1],
             reverse=True
         )[:5]
         
-        # Calculate average content length
+        # Calculate avg. content length
         total_length = sum(
             meta["content_length"] 
             for meta in self._metadata_index.values()

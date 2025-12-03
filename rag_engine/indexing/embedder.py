@@ -5,7 +5,6 @@ Embedder with text preprocessing.
 from typing import List
 from langchain_huggingface import HuggingFaceEmbeddings
 
-
 class Embedder:
     """
     Text embedder with preprocessing.
@@ -35,9 +34,9 @@ class Embedder:
         Returns:
             Preprocessed text
         """
-        # Remove extra whitespace
+        
         text = " ".join(text.split())
-        # Strip leading/trailing spaces
+        
         text = text.strip()
         return text
     
@@ -51,10 +50,9 @@ class Embedder:
         Returns:
             Embedding vector as list of floats
         """
-        # Preprocess text
+        
         processed_text = self._preprocess_text(text)
         
-        # Generate embedding
         embedding = self.model.embed_query(processed_text)
         
         return embedding
@@ -73,7 +71,6 @@ class Embedder:
         embeddings = []
         
         for i, text in enumerate(texts):
-            # Show progress for large batches
             if show_progress and (i + 1) % 10 == 0:
                 print(f"Embedding progress: {i + 1}/{len(texts)} documents")
             
