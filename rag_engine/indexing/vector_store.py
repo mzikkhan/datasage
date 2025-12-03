@@ -72,8 +72,9 @@ class VectorStore:
             doc_id = f"doc_{self._doc_count:06d}"
             doc_ids.append(doc_id)
             
-            # Extract source from metadata
-            source = doc.metadata.get("source", "unknown")
+            # Extract source from metadata - handle both old and new format
+            # New format uses "path", old format uses "source"
+            source = doc.metadata.get("path") or doc.metadata.get("source", "unknown")
             
             # Custom metadata tracking
             self._metadata_index[doc_id] = {
@@ -134,8 +135,8 @@ class VectorStore:
             doc.metadata["search_rank"] = i + 1
             doc.metadata["relevance_score"] = 1.0 / (i + 1)  # Simple inverse rank
             
-            # Track source popularity
-            source = doc.metadata.get("source", "unknown")
+            # Track source popularity - handle both old and new format
+            source = doc.metadata.get("path") or doc.metadata.get("source", "unknown")
             self._search_stats["popular_sources"][source] = (
                 self._search_stats["popular_sources"].get(source, 0) + 1
             )
@@ -156,8 +157,8 @@ class VectorStore:
         Returns:
             Documents from the specified source
         """
-        # Use source-based filtering
-        filter_dict = {"source": source}
+        # Try filtering by both "path" and "source" for compatibility
+        filter_dict = {"path": source}
         return self.search(query, k=k, filter=filter_dict)
     
     def get_sources(self) -> List[str]:
@@ -194,7 +195,7 @@ class VectorStore:
         Returns:
             Dictionary of statistics
         """
-        # Calculate source distribution
+        # Calculate src distribution
         source_distribution = {
             source: len(doc_ids) 
             for source, doc_ids in self._source_index.items()
